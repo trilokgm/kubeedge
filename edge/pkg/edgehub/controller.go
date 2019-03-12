@@ -298,6 +298,7 @@ func (ehc *Controller) postURLRequst(client *http.Client) (string, error) {
 		case http.StatusOK:
 			defer resp.Body.Close()
 			bodyBytes, _ := ioutil.ReadAll(resp.Body)
+			log.LOGGER.Infof("response body bytes : %s", string(bodyBytes))
 			url := fmt.Sprintf("%s/%s/%s/events", string(bodyBytes), ehc.config.ProjectID, ehc.config.NodeID)
 			log.LOGGER.Infof("successfully to get cloudaccess url: %s", url)
 			return url, nil
@@ -325,7 +326,6 @@ func (ehc *Controller) getCloudHubURL() (string, error) {
 			log.LOGGER.Warnf("failed to new https client for placement, error: %+v", err)
 			return "", fmt.Errorf("failed to new https client for placement, error: %+v", err)
 		}
-
 		cloudHubURL, err := ehc.postURLRequst(placementClient)
 		if err != nil {
 			log.LOGGER.Warnf("failed to get cloud hub url, error: %+v", err)

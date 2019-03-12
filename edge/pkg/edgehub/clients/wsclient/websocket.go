@@ -1,7 +1,7 @@
 package wsclient
 
 import (
-	"crypto/tls"
+	//"crypto/tls"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -45,20 +45,21 @@ func NewWebSocketClient(conf *WebSocketConfig) *WebSocketClient {
 // Init initializes websocket client
 func (wcc *WebSocketClient) Init() error {
 	log.LOGGER.Infof("start to connect Access")
-	cert, err := tls.LoadX509KeyPair(wcc.config.CertFilePath, wcc.config.KeyFilePath)
-	if err != nil {
-		log.LOGGER.Errorf("failed to load x509 key pair: %v", err)
-		return fmt.Errorf("failed to load x509 key pair, error: %v", err)
-	}
+	//cert, err := tls.LoadX509KeyPair(wcc.config.CertFilePath, wcc.config.KeyFilePath)
+	//if err != nil {
+	//	log.LOGGER.Errorf("failed to load x509 key pair: %v", err)
+	//	return fmt.Errorf("failed to load x509 key pair, error: %v", err)
+	//}
 
 	dialer := &websocket.Dialer{
-		TLSClientConfig: &tls.Config{
-			Certificates:       []tls.Certificate{cert},
-			InsecureSkipVerify: true,
-		},
+		//TLSClientConfig: &tls.Config{
+		//	Certificates:       []tls.Certificate{cert},
+		//	InsecureSkipVerify: true,
+		//},
 		HandshakeTimeout: wcc.config.HandshakeTimeout,
 	}
 
+	log.LOGGER.Infof(" websocker dial params , %s, %v", wcc.config.URL, wcc.config.ExtendHeader)
 	for i := 0; i < retryCount; i++ {
 		conn, resp, err := dialer.Dial(wcc.config.URL, wcc.config.ExtendHeader)
 		if err != nil {

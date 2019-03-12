@@ -409,3 +409,29 @@ func StartCloudHub(config *util.Config, eventq *channelq.ChannelEventQueue) {
 	bhLog.LOGGER.Infof("Start cloud hub service")
 	go s.ListenAndServeTLS("", "")
 }
+
+// StartCloudHub starts the cloud hub service
+func StartCloudHubNonTLS(config *util.Config, eventq *channelq.ChannelEventQueue) {
+	// init handler
+	ah := &AccessHandle{
+		EventHandle: &EventHandle{
+			KeepaliveInterval: config.KeepaliveInterval,
+			WriteTimeout:      config.WriteTimeout,
+			EventQueue:        eventq,
+		},
+		NodeLimit: config.NodeLimit,
+	}
+	EventHandler = ah.EventHandle
+
+	router := mux.NewRouter()
+	router.HandleFunc(PathEvent, ah.ServeEvent)
+
+	// start server
+	s := http.Server{
+		Addr:     fmt.Sprintf("%s:%d", config.Address, config.Port),
+		Handler:  router,
+		ErrorLog: log.New(&FilterWriter{}, "", log.LstdFlags),
+	}
+	bhLog.LOGGER.Infof("Start cloud hub service")
+	go s.ListenAndServe()
+}
